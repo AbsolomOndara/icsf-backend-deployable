@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Managed by express-session/connect-pg-simple. Keeping it in the Prisma
+// schema prevents `prisma db push` from treating active sessions as stray data.
+model Session {
+  sid    String   @id @db.VarChar
+  sess   Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+  @@map("session")
+}
+
 enum UserRole {
   STUDENT
   TUTOR
