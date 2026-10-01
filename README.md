@@ -14,6 +14,11 @@ Independent Node.js API for the Institute of Cybersecurity & Forensics platform.
 - Modules, lessons and student progress
 - Account suspension with immediate access revocation
 - Contact-message storage, input validation and rate limiting
+- Editable user profiles and secure administrator password resets
+- M-PESA transaction-reference submission and enrollment review
+- Tutor deletion and immediate access revocation
+- Course resource links downloadable by approved students
+- Email-based forgotten-password recovery through SMTP
 
 ## Local setup
 
@@ -67,5 +72,15 @@ VITE_API_URL=https://your-backend-host/api
 ```
 
 Redeploy the frontend after adding the variable. Never put `DATABASE_URL`, `SESSION_SECRET` or administrator passwords in Vercel's frontend variables.
+
+For the supplied Vercel frontend, set `VITE_API_URL=/api`. Its rewrite proxies requests to the Render backend and keeps authentication cookies first-party.
+
+## Password-reset email
+
+Configure an SMTP provider on Render with `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` and `EMAIL_FROM`. Without SMTP, the forgot-password form returns a privacy-safe response but cannot deliver the reset link. Existing passwords are hashed and can never be viewed. Administrators can generate a one-time temporary password instead.
+
+## Course-material files
+
+Tutors and administrators can attach a resource title and public HTTPS resource URL to each lesson. Store PDFs and other files in an authorised file service and paste the resulting HTTPS URL. File hosting itself is intentionally kept outside the API server because Render's ephemeral filesystem is not permanent storage.
 
 For custom domains, use `www.yourdomain.tld` for the frontend and `api.yourdomain.tld` for this service. Add the exact frontend origin to `CLIENT_URL`. Multiple permitted frontend origins can be comma-separated.

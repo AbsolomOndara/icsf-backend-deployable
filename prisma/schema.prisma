@@ -37,6 +37,7 @@ model User {
   id                 Int                  @id @default(autoincrement())
   name               String
   email              String               @unique
+  phone              String?
   passwordHash       String?
   role               UserRole             @default(STUDENT)
   status             UserStatus           @default(ACTIVE)
@@ -107,6 +108,7 @@ model Lesson {
   content     String?
   videoUrl    String?
   resourceUrl String?
+  resourceTitle String?
   position    Int
   module      Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   progress    LessonProgress[]
@@ -124,6 +126,8 @@ model Enrollment {
   approvedById    Int?
   rejectedAt      DateTime?
   rejectionReason String?
+  paymentReference String?
+  paymentSubmittedAt DateTime?
   updatedAt       DateTime         @updatedAt
   student         User             @relation("StudentEnrollments", fields: [studentId], references: [id])
   course          Course           @relation(fields: [courseId], references: [id])

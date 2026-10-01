@@ -36,6 +36,10 @@ export async function updateUserStatus(req, res, next) {
   } catch (error) { next(error); }
 }
 
+export async function deleteTutor(req,res,next){try{const id=Number(req.params.id);const tutor=await prisma.user.findFirst({where:{id,role:"TUTOR"}});if(!tutor)return res.status(404).json({message:"Tutor not found."});await prisma.user.delete({where:{id}});res.status(204).end();}catch(error){next(error);}}
+
+export async function resetUserPassword(req,res,next){try{const id=Number(req.params.id);const user=await prisma.user.findUnique({where:{id}});if(!user)return res.status(404).json({message:"User not found."});const temporaryPassword=crypto.randomBytes(10).toString("base64url");const passwordHash=await argon2.hash(temporaryPassword);await prisma.user.update({where:{id},data:{passwordHash,mustChangePassword:true}});res.json({email:user.email,temporaryPassword,message:"Temporary password generated. It is shown only once."});}catch(error){next(error);}}
+
 export async function createTutor(req, res, next) {
   try {
     const email = req.body.email?.toLowerCase();

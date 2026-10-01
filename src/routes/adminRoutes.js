@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { archiveCourse, createCourse, updateCourse } from "../controllers/courseController.js";
-import { dashboard, listUsers, updateUserStatus, createTutor, listAllCourses, assignTutor, unassignTutor, listMessages, closeMessage } from "../controllers/adminController.js";
+import { dashboard, listUsers, updateUserStatus, createTutor, deleteTutor, resetUserPassword, listAllCourses, assignTutor, unassignTutor, listMessages, closeMessage } from "../controllers/adminController.js";
 import { listPending, setEnrollmentStatus } from "../controllers/enrollmentController.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { allowRoles } from "../middleware/allowRoles.js";
@@ -10,6 +10,8 @@ router.use(requireAuth, allowRoles("ADMIN"), requirePasswordUpdated);
 router.get("/dashboard", dashboard);
 router.get("/users", listUsers);
 router.patch("/users/:id/status", updateUserStatus);
+router.post("/users/:id/reset-password", resetUserPassword);
+router.delete("/tutors/:id", deleteTutor);
 router.post("/tutors", createTutor);
 router.get("/courses", listAllCourses);
 router.post("/courses", createCourse);
