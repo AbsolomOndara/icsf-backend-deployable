@@ -1,0 +1,24 @@
+import "dotenv/config"; import express from "express"; import cors from "cors"; import helmet from "helmet"; import rateLimit from "express-rate-limit"; import { sessionMiddleware } from "./config/session.js"; import { isAllowedOrigin } from "./config/origins.js"; import authRoutes from "./routes/authRoutes.js"; import courseRoutes from "./routes/courseRoutes.js"; import adminRoutes from "./routes/adminRoutes.js"; import tutorRoutes from "./routes/tutorRoutes.js"; import studentRoutes from "./routes/studentRoutes.js"; import contactRoutes from "./routes/contactRoutes.js"; import { errorHandler } from "./middleware/errorHandler.js";
+const app = express();
+app.set("trust proxy", 1);
+app.use(helmet());
+app.use(cors({ origin(origin, callback) { callback(isAllowedOrigin(origin) ? null : new Error("Origin not allowed by CORS"), isAllowedOrigin(origin)); }, credentials: true }));
+app.use(express.json({ limit: "1mb" }));
+app.use(sessionMiddleware);
+app.use((req, res, next) => {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method) || isAllowedOrigin(req.get("origin"))) return next();
+  return res.status(403).json({ message: "Request origin is not permitted." });
+});
+app.use("/api/auth/login", rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false }));
+app.use("/api/auth/register", rateLimit({ windowMs: 60 * 60 * 1000, limit: 15, standardHeaders: true, legacyHeaders: false }));
+app.use("/api/contact", rateLimit({ windowMs: 60 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false }));
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.use("/api/auth", authRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/tutor", tutorRoutes);
+app.use("/api/student", studentRoutes);
+app.use((req, res) => res.status(404).json({ message: "Endpoint not found." }));
+app.use(errorHandler);
+export default app;
