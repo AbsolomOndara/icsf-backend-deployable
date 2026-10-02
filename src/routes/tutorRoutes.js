@@ -4,6 +4,7 @@ import { requireAuth } from "../middleware/requireAuth.js";
 import { allowRoles } from "../middleware/allowRoles.js";
 import { requireCourseAssignment } from "../middleware/requireCourseAssignment.js";
 import { requirePasswordUpdated } from "../middleware/requirePasswordUpdated.js";
+import { createAssessment, deleteAssessment, listAssessmentSubmissions, gradeAssessmentSubmission } from "../controllers/assessmentController.js";
 const router = Router();
 router.use(requireAuth, allowRoles("TUTOR", "ADMIN"), requirePasswordUpdated);
 router.get("/courses", listTutorCourses);
@@ -14,4 +15,8 @@ router.delete("/courses/:courseId/modules/:moduleId", requireCourseAssignment, d
 router.post("/courses/:courseId/modules/:moduleId/lessons", requireCourseAssignment, createLesson);
 router.patch("/courses/:courseId/lessons/:lessonId", requireCourseAssignment, updateLesson);
 router.delete("/courses/:courseId/lessons/:lessonId", requireCourseAssignment, deleteLesson);
+router.post("/courses/:courseId/modules/:moduleId/assessments", requireCourseAssignment, createAssessment);
+router.delete("/courses/:courseId/assessments/:assessmentId", requireCourseAssignment, deleteAssessment);
+router.get("/courses/:courseId/assessments/:assessmentId/submissions", requireCourseAssignment, listAssessmentSubmissions);
+router.patch("/courses/:courseId/submissions/:submissionId", requireCourseAssignment, gradeAssessmentSubmission);
 export default router;

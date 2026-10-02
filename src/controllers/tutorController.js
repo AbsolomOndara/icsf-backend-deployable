@@ -2,7 +2,7 @@ import { prisma } from "../config/prisma.js";
 export async function listTutorCourses(req, res, next) {
   try {
     if(req.user.role==="ADMIN"){
-      const courses=await prisma.course.findMany({where:{status:{not:"ARCHIVED"}},include:{modules:{include:{lessons:{orderBy:{position:"asc"}}},orderBy:{position:"asc"}},_count:{select:{enrollments:true}}},orderBy:{createdAt:"desc"}});
+      const courses=await prisma.course.findMany({where:{status:{not:"ARCHIVED"}},include:{modules:{include:{lessons:{orderBy:{position:"asc"}},assessments:{orderBy:{createdAt:"desc"}}},orderBy:{position:"asc"}},_count:{select:{enrollments:true}}},orderBy:{createdAt:"desc"}});
       return res.json({courses});
     }
     const where = req.user.role === "ADMIN" ? {} : { tutorId: req.user.id };
@@ -12,7 +12,7 @@ export async function listTutorCourses(req, res, next) {
         course: {
           include: {
             modules: {
-              include: { lessons: { orderBy: { position: "asc" } } },
+              include: { lessons: { orderBy: { position: "asc" } }, assessments: { orderBy: { createdAt: "desc" } } },
               orderBy: { position: "asc" },
             },
             _count: { select: { enrollments: true } },

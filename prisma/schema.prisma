@@ -44,6 +44,18 @@ enum EnrollmentStatus {
   COMPLETED
 }
 
+enum AssessmentType {
+  QUIZ
+  TEST
+  EXAM
+}
+
+enum SubmissionStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+}
+
 model User {
   id                 Int                  @id @default(autoincrement())
   name               String
@@ -58,6 +70,7 @@ model User {
   enrollments        Enrollment[]         @relation("StudentEnrollments")
   approvals          Enrollment[]         @relation("EnrollmentApprover")
   progress           LessonProgress[]
+  assessmentSubmissions AssessmentSubmission[]
   passwordTokens     PasswordSetupToken[]
   contactReplies     ContactMessage[]     @relation("ContactResponder")
   createdAt          DateTime             @default(now())
@@ -108,6 +121,7 @@ model Module {
   position Int
   course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons  Lesson[]
+  assessments Assessment[]
 
   @@unique([courseId, position])
 }
@@ -156,6 +170,51 @@ model LessonProgress {
   lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@id([studentId, lessonId])
+}
+
+model Assessment {
+  id              Int              @id @default(autoincrement())
+  moduleId        Int
+  title           String
+  instructions    String?
+  type            AssessmentType   @default(QUIZ)
+  startsAt        DateTime?
+  dueAt           DateTime?
+  durationMinutes Int?
+  maxScore        Int              @default(100)
+  published       Boolean          @default(false)
+  questions       Json
+  module          Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  submissions     AssessmentSubmission[]
+  createdAt       DateTime         @default(now())
+}
+
+model AssessmentSubmission {
+  id           Int              @id @default(autoincrement())
+  assessmentId Int
+  studentId    Int
+  answers      Json?
+  score        Decimal?
+  feedback     String?
+  status       SubmissionStatus @default(IN_PROGRESS)
+  startedAt    DateTime         @default(now())
+  submittedAt  DateTime?
+  assessment   Assessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  student      User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, studentId])
+}
+
+model EBook {
+  id          Int       @id @default(autoincrement())
+  title       String
+  author      String?
+  description String?
+  category    String?
+  coverUrl    String?
+  fileUrl     String
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
 }
 
 model PasswordSetupToken {

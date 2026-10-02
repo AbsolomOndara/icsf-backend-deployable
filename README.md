@@ -15,9 +15,12 @@ Independent Node.js API for the Institute of Cybersecurity & Forensics platform.
 - Account suspension with immediate access revocation
 - Contact-message storage, input validation and rate limiting
 - Editable user profiles and secure administrator password resets
-- M-PESA transaction-reference submission and enrollment review
+- Full M-PESA confirmation-message submission and enrollment review
 - Tutor deletion and immediate access revocation
-- Course resource links downloadable by approved students
+- PDF, Word, PowerPoint and text uploads through Cloudinary
+- Sequential modules that stay locked until the previous module is complete
+- Scheduled and timed quizzes, tests and exams with tutor grading
+- A managed e-book library for students
 - Email-based forgotten-password recovery through SMTP
 
 ## Local setup
@@ -81,6 +84,6 @@ Configure an SMTP provider on Render with `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE
 
 ## Course-material files
 
-Tutors and administrators can attach a resource title and public HTTPS resource URL to each lesson. Store PDFs and other files in an authorised file service and paste the resulting HTTPS URL. File hosting itself is intentionally kept outside the API server because Render's ephemeral filesystem is not permanent storage.
+Create a Cloudinary account and add `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` to Render. The API accepts PDF, DOC, DOCX, PPT, PPTX and TXT files up to 20 MB and stores them in Cloudinary because Render's filesystem is not permanent. The implementation is in `src/services/fileStorage.js`; the upload policy is in `src/routes/resourceRoutes.js`.
 
 For custom domains, use `www.yourdomain.tld` for the frontend and `api.yourdomain.tld` for this service. Add the exact frontend origin to `CLIENT_URL`. Multiple permitted frontend origins can be comma-separated.

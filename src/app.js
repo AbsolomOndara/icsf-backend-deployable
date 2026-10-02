@@ -1,4 +1,4 @@
-import "dotenv/config"; import express from "express"; import cors from "cors"; import helmet from "helmet"; import rateLimit from "express-rate-limit"; import { sessionMiddleware } from "./config/session.js"; import { isAllowedOrigin } from "./config/origins.js"; import authRoutes from "./routes/authRoutes.js"; import courseRoutes from "./routes/courseRoutes.js"; import adminRoutes from "./routes/adminRoutes.js"; import tutorRoutes from "./routes/tutorRoutes.js"; import studentRoutes from "./routes/studentRoutes.js"; import contactRoutes from "./routes/contactRoutes.js"; import { errorHandler } from "./middleware/errorHandler.js";
+import "dotenv/config"; import express from "express"; import cors from "cors"; import helmet from "helmet"; import rateLimit from "express-rate-limit"; import { sessionMiddleware } from "./config/session.js"; import { isAllowedOrigin } from "./config/origins.js"; import authRoutes from "./routes/authRoutes.js"; import courseRoutes from "./routes/courseRoutes.js"; import adminRoutes from "./routes/adminRoutes.js"; import tutorRoutes from "./routes/tutorRoutes.js"; import studentRoutes from "./routes/studentRoutes.js"; import contactRoutes from "./routes/contactRoutes.js"; import resourceRoutes from "./routes/resourceRoutes.js"; import { errorHandler } from "./middleware/errorHandler.js";
 const app = express();
 app.set("trust proxy", 1);
 app.use(helmet());
@@ -19,6 +19,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/tutor", tutorRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api", resourceRoutes);
 app.use((req, res) => res.status(404).json({ message: "Endpoint not found." }));
 app.use(errorHandler);
 export default app;

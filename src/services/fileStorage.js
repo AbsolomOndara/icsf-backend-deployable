@@ -1,0 +1,3 @@
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({cloud_name:process.env.CLOUDINARY_CLOUD_NAME,api_key:process.env.CLOUDINARY_API_KEY,api_secret:process.env.CLOUDINARY_API_SECRET,secure:true});
+export function uploadBuffer(file){return new Promise((resolve,reject)=>{if(!process.env.CLOUDINARY_CLOUD_NAME)return reject(Object.assign(new Error("File storage is not configured."),{status:503}));const stream=cloudinary.uploader.upload_stream({folder:"icsf/course-materials",resource_type:"raw",use_filename:true,unique_filename:true},(error,result)=>error?reject(error):resolve({url:result.secure_url,name:file.originalname,bytes:result.bytes,format:result.format}));stream.end(file.buffer);});}
